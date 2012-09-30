@@ -17,6 +17,8 @@ int main(void) {
 	 while (scan("%d", &a)) {
 	 array[i] = a;
 	 }*/
+	printf("hello");
+
 	int i=0;
 	for (i = 0; i < MAX; i++) {
 		printf("%d ", array[i]);
