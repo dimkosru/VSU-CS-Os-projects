@@ -3,36 +3,41 @@
 #include <pthread.h>
 #include <time.h>
 
-#define MAX 10
+#define MAX 48
 
 void *print_message_function(void *ptr);
 void *bubbleSort(void *ptr);
 
+struct Params {
+	int size;
+	int * first;
+};
+
 int main(void) {
-	pthread_t thread1, thread2;
+	pthread_t thread;
 	int a[MAX];
-	int b[MAX];
-	int *message1 = a;
-	int *message2 = b;
 
 	srand(time(NULL ));
 
-    // Заполенение массивов
+	// Заполенение массивов
 	int i = 0;
 	for (i = 0; i < MAX; i++) {
 		a[i] = rand() % MAX;
-		b[i] = rand() % MAX;
-
 	}
 
-    // Создание потоков
-	pthread_create(&thread1, NULL, bubbleSort, (void*) message1);
-	pthread_create(&thread2, NULL, bubbleSort, (void*) message2);
+	struct Params *p1;
+	
+	p1->size = MAX / 4;
 
-	pthread_join(thread1, NULL );
-	pthread_join(thread2, NULL );
-
-    // Вывод результата
+	for (i = 0; i < 4; i++) {
+		p1->first = a + p1->size * i;
+		if (i==3) p1->size = MAX-p1->size*3;
+		// Создание потоков
+		pthread_create(&thread, NULL, bubbleSort, (void*) p1);
+		pthread_join(thread, NULL );
+	}
+	
+	// Вывод результата
 	i = 0;
 	for (i = 0; i < MAX; i++) {
 		printf("%d \n", a[i]);
@@ -52,20 +57,22 @@ void *print_message_function(void *ptr) {
 	return 0;
 }
 
-
 /* Пузырьковая сортировка */
 void *bubbleSort(void *ptr) {
-	int *a;
-	a = (int *) ptr;
+	struct Params *p;
+	p = (struct Params *) ptr;
+
+	int *a = p->first;
+	int size = p->size;
 
 	int i, j;
 	int x;
-	for (i = 0; i < MAX; i++) {
-		for (j = MAX - 1; j > i; j--) {
-			if (a[j - 1] > a[j]) {
-				x = a[j - 1];
-				a[j - 1] = a[j];
-				a[j] = x;
+	for (i = 0; i < size; i++) {
+		for (j = size - 1; j > i; j--) {
+			if (*(a + j - 1) > *(a + j)) {
+				x = *(a + j - 1);
+				*(a + j - 1) = *(a + j);
+				*(a + j) = x;
 			}
 		}
 	}
