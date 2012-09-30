@@ -22,22 +22,34 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: Sort
+all: pre-build main-build
+
+# Main-build Target
+main-build: Sort
 
 # Tool invocations
 Sort: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "Sort" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -Xlinker -lpthread -o "Sort" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
+	$(MAKE) --no-print-directory post-build
 
 # Other Targets
 clean:
 	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) Sort
 	-@echo ' '
 
+pre-build:
+	--lpthread
+	-@echo ' '
+
+post-build:
+	--lpthread
+	-@echo ' '
+
 .PHONY: all clean dependents
-.SECONDARY:
+.SECONDARY: main-build pre-build post-build
 
 -include ../makefile.targets
